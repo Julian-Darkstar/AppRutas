@@ -1,0 +1,106 @@
+  .cont{
+    min-height: calc(100vh - 150px - 150px );
+  }
+    
+      img{
+        max-height: 100px;
+        max-width: 100px;
+        
+      }
+
+      .icono{
+      height: 40px;
+      width: 40px;
+    }
+    
+    footer{
+      background-color: rgba(231, 231, 231, 0.781);
+      height: 150px;
+    }
+
+    ul{
+      padding-top: 0px;
+      font-size: 20px;
+    }
+    h1{
+      font-size: 80px;
+      font-family: aviano, serif;
+      font-style: normal;
+      font-weight: 300;
+    }
+
+    h2{
+      font-size: 65px;
+      font-family: aviano, serif;
+      font-style: normal;
+      font-weight: 300;
+    }
+
+    a{
+      font-family: merriweather, serif;
+      font-style: normal;
+      font-weight: 300;
+    }
+
+    p{
+      font-size: 20px;
+      font-family: acumin-pro, sans-serif;
+      font-style: normal;
+      font-weight: 400;
+    }
+
+    .texto-largo{
+    /* background-color: lightgrey;*/
+      width: 1200px;
+    }
+    .mapa{
+      min-width: 250px;
+      max-width: 900px;
+      padding: 15px;  
+      height: 650px;
+    }
+    
+   h3{
+    font-size: 50px;
+    font-family: aviano, serif;
+    font-style: normal;
+    font-weight: 300;
+   }
+
+  @media (max-width: 992px){
+    
+    .mapa{
+      min-width: 250px;
+      max-width: 900px;
+      padding: 15px;
+      
+     height:500px;
+    
+    }
+    
+    .texto-largo{
+     /* background-color: lightgrey;*/
+      width: 360px;
+    }
+
+    p{
+      font-size: 12px;
+    }
+
+    h1{
+      font-size: 40px;
+    }
+
+    h2{
+      font-size: 30px;
+    }
+
+    h3{
+      font-size: 25px;
+    }
+footer{
+      font-size: 10px;
+     }
+    }
+    
+    
