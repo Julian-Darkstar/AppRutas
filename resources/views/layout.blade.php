@@ -61,7 +61,7 @@
         <a class="nav-link" href="/about">Conoce mas</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/contacto">Contacto</a>
+        <a class="nav-link" href="/no-disponible">Contacto</a>
       </li>
       <li class="nav-item">
               <a class="nav-link disabled">Donar</a>
