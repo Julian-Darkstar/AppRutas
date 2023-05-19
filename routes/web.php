@@ -29,6 +29,10 @@ Route::get('/R61', function () {
     return view('Rutas.Ruta61Industrial');
 });
 
+Route::get('/R15', function () {
+    return view('Rutas.Ruta15LatinoSilva');
+});
+
 Route::get('/about', function () {
     return view ('Rutas.about');
 });
