@@ -15,6 +15,8 @@
     <h2>Rutas mas populares</h2>
      <a href="/R60"> <button type="button" class="btn btn-outline-primary"> Ruta 60 Pinos-Gobers</button></a>
      <a href="/R61"> <button type="button" class="btn btn-outline-primary"> Ruta 61 Salvador Ortega-Cd. Industrial</button></a>
+     <a href="/R15"> <button type="button" class="btn btn-outline-primary"> Ruta 15 Latino Silva</button></a>
+    
     
 </center>
 <br>
