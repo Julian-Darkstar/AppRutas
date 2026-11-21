@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>Ruta No. 15-A  Misión de la esperanza - Salvador Ortega</name>
+    <description/>
+    <Style id="line-0F9D58-5650-nodesc-normal">
+      <LineStyle>
+        <color>ff589d0f</color>
+        <width>5.65</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <Style id="line-0F9D58-5650-nodesc-highlight">
+      <LineStyle>
+        <color>ff589d0f</color>
+        <width>8.475</width>
+      </LineStyle>
+      <BalloonStyle>
+        <text><![CDATA[<h3>$[name]</h3>]]></text>
+      </BalloonStyle>
+    </Style>
+    <StyleMap id="line-0F9D58-5650-nodesc">
+      <Pair>
+        <key>normal</key>
+        <styleUrl>#line-0F9D58-5650-nodesc-normal</styleUrl>
+      </Pair>
+      <Pair>
+        <key>highlight</key>
+        <styleUrl>#line-0F9D58-5650-nodesc-highlight</styleUrl>
+      </Pair>
+    </StyleMap>
+    <Folder>
+      <name>Capa sin título</name>
+      <Placemark>
+        <name>Ruta No. 15- A Latino Silva</name>
+        <styleUrl>#line-0F9D58-5650-nodesc</styleUrl>
+        <LineString>
+          <tessellate>1</tessellate>
+          <coordinates>
+            -100.855493,20.5587923,0
+            -100.8506541,20.5567564,0
+            -100.844367,20.5541947,0
+            -100.8441632,20.5541244,0
+            -100.8447109,20.548375,0
+            -100.8418364,20.5462225,0
+            -100.8304107,20.5379094,0
+            -100.8299262,20.5369904,0
+            -100.8293898,20.5344585,0
+            -100.8287031,20.5320874,0
+            -100.8283615,20.5291989,0
+            -100.8238,20.5291487,0
+            -100.8234977,20.5232416,0
+            -100.8166436,20.5232244,0
+            -100.8036642,20.5222718,0
+            -100.8017635,20.5223426,0
+            -100.8011082,20.524199,0
+            -100.8005753,20.5291219,0
+            -100.8024279,20.5293535,0
+            -100.8026338,20.5307939,0
+            -100.8030873,20.5313347,0
+            -100.8032482,20.5321184,0
+            -100.8030122,20.5344494,0
+            -100.80235,20.5413835,0
+            -100.7964688,20.541369,0
+            -100.7952036,20.5416534,0
+            -100.7951384,20.5420221,0
+            -100.7952036,20.5416534,0
+            -100.7948325,20.5417995,0
+            -100.7937247,20.5432365,0
+            -100.7924287,20.5456597,0
+            -100.7898516,20.5454267,0
+            -100.7893155,20.545236,0
+            -100.7892675,20.5458598,0
+            -100.7901412,20.5474259,0
+            -100.7903343,20.5492141,0
+            -100.7904202,20.5495155,0
+            -100.792641,20.5496662,0
+            -100.7926931,20.5492809,0
+            -100.7885534,20.548963,0
+            -100.7884974,20.549409,0
+            -100.7865394,20.5492031,0
+            -100.7862416,20.5517285,0
+            -100.7838005,20.5514644,0
+          </coordinates>
+        </LineString>
+      </Placemark>
+    </Folder>
+  </Document>
+</kml>

@@ -1,0 +1,35 @@
+{
+  "name": "apprutas",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Rutas del transporte público de Celaya, Guanajuato, en una web app rápida e instalable.",
+  "type": "module",
+  "scripts": {
+    "datos": "node scripts/compilar-datos.mjs",
+    "importar-kml": "node scripts/importar-kml.mjs",
+    "importar-imipe": "node scripts/importar-imipe.mjs",
+    "predev": "npm run datos",
+    "dev": "vite",
+    "prebuild": "npm run datos",
+    "build": "tsc --noEmit && vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "iconos": "node scripts/generar-iconos.mjs"
+  },
+  "engines": {
+    "node": ">=22.12"
+  },
+  "dependencies": {
+    "@fontsource-variable/atkinson-hyperlegible-next": "^5.3.0",
+    "maplibre-gl": "^6.19.0"
+  },
+  "devDependencies": {
+    "@tmcw/togeojson": "^7.1.4",
+    "@types/geojson": "^7946.0.16",
+    "@xmldom/xmldom": "^0.9.12",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.8",
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^5.1.1"
+  }
+}

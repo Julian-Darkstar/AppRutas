@@ -1,32 +1,85 @@
-![AppRutas Logo-1](https://user-images.githubusercontent.com/93355425/224579531-a35a1efd-4835-4fd5-8bfd-b779472cf7d1.png)
+<p align="center">
+  <img src="marca/icono-app.svg" width="88" alt="" />
+</p>
 
+<h1 align="center">AppRutas</h1>
+<p align="center"><strong>Toma la ruta correcta.</strong><br />Los recorridos del camión urbano de Celaya, Guanajuato, en una web app rápida, gratuita e instalable.</p>
 
-<br>
-En la actualidad, el transporte público es una necesidad básica para la mayoría de las
-personas en la mayoría de las ciudades. En particular, el uso de las rutas de autobuses
-es una forma popular y económica de desplazarse. Sin embargo, para muchas
-personas, el uso de las rutas de autobuses puede ser confuso. Es común que las
-personas no sepan qué ruta tomar, con qué frecuencia pasa el autobús o el recorrido
-de la ruta y dónde están las paradas pardas.
-Este es el problema que detectamos en la ciudad de Celaya, Guanajuato, donde más
-de 210 mil personas utilizan diariamente las rutas de autobuses. Por lo tanto, creemos
-que es importante ofrecer una solución que facilite el uso de las rutas de autobuses y
-haga que la experiencia sea más eficiente y agradable.
-Es así como nació la idea de desarrollar la aplicación AppRutas. Con esta aplicación,
-se pretende que los usuarios puedan consultar los recorridos de las rutas de los
-camiones urbanos.
-<br>
+---
 
-![image](https://user-images.githubusercontent.com/93355425/224578860-0b3e5eef-08b8-4ce9-8088-cecf39578ee7.png)
-<br>
-Este proyecto esta siendo desarrollado por:
-<br>
-Orozco Paniagua Asaf Sebastian
-<br>
-Jiménez Cortés Julián Moisés 
-<br>
-Hernandez Gallegos Cinthya Noely
-<br>
+Más de 210 mil personas usan las rutas de camión en Celaya todos los días, y para muchas no es claro qué ruta tomar, por dónde
+pasa o dónde bajarse. AppRutas reúne los recorridos en un mapa claro que funciona en cualquier teléfono, incluso sin conexión
+después de la primera visita.
 
-Todos ellos de la especialidad de programación grupo 6°G 
-generacion 2020-2023 del CETIS No. 115 Mexicano Japones 
+<p align="center">
+  <img src="docs/capturas/escritorio-ruta-61.webp" width="620" alt="Ficha de la ruta 61 en escritorio: sentido con flechas, datos y puntos de referencia" />
+  <img src="docs/capturas/movil-ruta-61.webp" width="186" alt="La misma ruta en un celular, con la hoja inferior" />
+</p>
+
+## Qué hace
+
+- **63 rutas** (38 urbanas y 25 suburbanas) con sus **755 paradas oficiales**, cada ruta con su color y su número sobre la línea.
+- **Búsqueda** por número (`47`, `15a`), colonia, lugar o nombre de parada, sin importar acentos.
+- **Ficha de cada ruta:** sentido de ida o regreso con flechas, paradas en orden, frecuencia, horario y tarifa.
+- **“Pasan por aquí”:** toca el mapa donde se juntan varias rutas y te dice cuáles son.
+- **Enlaces para compartir** (`…/#/ruta/61/regreso`), ideales para WhatsApp.
+- **PWA:** se instala como app y abre sin internet. Funciona en celulares de gama baja.
+
+## Cómo correrla
+
+Requiere Node.js 22 o más reciente.
+
+```bash
+npm install
+npm run dev        # http://localhost:5173
+npm test           # pruebas (búsqueda, navegación, datos, importador)
+npm run build      # versión de producción en dist/
+npm run preview    # sirve dist/ para probarla
+```
+
+## Cómo está hecha
+
+| Parte | Elección | Por qué |
+|---|---|---|
+| App | TypeScript + [Vite](https://vite.dev), sin framework | La app es pequeña: unos 12 KB comprimidos antes del mapa |
+| Mapa | [MapLibre GL JS](https://maplibre.org) + [OpenFreeMap](https://openfreemap.org) | Libre, sin clave de API ni costo por uso, con estilo propio |
+| Datos | GeoJSON en `data/rutas/` y `data/paradas.geojson`, validado al compilar | Editable a mano, revisable en git y GitHub lo muestra como mapa |
+| PWA | [vite-plugin-pwa](https://vite-pwa-org.netlify.app) (Workbox) | Funciona sin conexión; también guarda las teselas del mapa |
+| Hospedaje | GitHub Pages (`.github/workflows/publicar.yml`) | Gratis; se publica solo en cada push a `main` |
+
+```
+data/rutas/        una ruta por archivo (fuente de verdad)
+data/paradas.geojson  paradas oficiales (se asocian a cada ruta al compilar)
+data/fuentes/      copia de los datos del IMIPE Celaya (2021) y correcciones
+data/kml-original/ trazos de Google My Maps de 2023
+scripts/           importar KML, validar/compilar datos, generar íconos
+src/               app (mapa/, ui/, búsqueda, navegación)
+marca/             logo y símbolo en SVG
+docs/              identidad visual
+tests/             pruebas con Vitest
+```
+
+- **Agregar o corregir rutas:** [`data/README.md`](data/README.md)
+- **Logo, colores y tipografía:** [`docs/identidad-visual.md`](docs/identidad-visual.md)
+
+## Hoja de ruta
+
+1. ✅ **Rediseño:** nueva identidad, mapa propio, búsqueda, ficha por ruta, PWA. Rutas 60, 61 y 15-A migradas.
+2. ✅ **Todas las rutas oficiales:** 61 rutas y 774 paradas del IMIPE Celaya (2021) más las trazadas por el equipo.
+3. Verificar y actualizar recorridos (cambios desde 2021), “rutas cerca de mí”, líneas paralelas donde varias rutas comparten
+   calle, modo oscuro, exportación a GTFS, formulario de reportes.
+4. Planeador de viajes: “¿cómo llego de A a B?”, con transbordos.
+
+## Créditos
+
+Proyecto nacido en 2023 en la especialidad de Programación (6°G, generación 2020–2023) del CETIS No. 115 “Mexicano Japonés”, por:
+
+- Orozco Paniagua Asaf Sebastian
+- Jiménez Cortés Julián Moisés
+- Hernandez Gallegos Cinthya Noely
+
+La versión original en Laravel se conserva en la rama [`legacy`](../../tree/legacy).
+
+Rutas y paradas oficiales: [IMIPE Celaya](https://imipecelaya.org/cartografia-celaya/), Sistema de Información Geográfica
+Municipal (datos de 2021); ver [`data/fuentes/imipe-2021/LEEME.md`](data/fuentes/imipe-2021/LEEME.md). Mapa base © colaboradores
+de [OpenStreetMap](https://www.openstreetmap.org/copyright), servido por OpenFreeMap.

@@ -1,0 +1,35 @@
+/* Identidad visual de AppRutas — ver docs/identidad-visual.md */
+:root {
+  /* Marca */
+  --petroleo-900: #0a3540;
+  --petroleo-800: #0c4150;
+  --petroleo-700: #0f4c5c; /* color principal */
+  --petroleo-600: #13606f;
+  --petroleo-100: #cfe2e6;
+  --petroleo-50: #e6f0f1;
+  --cajeta-700: #8f5208;
+  --cajeta-400: #f2a33a; /* acento: origen del símbolo, detalles */
+  --cajeta-100: #f8e2c2;
+  --cajeta-50: #fdf3e4;
+
+  /* Neutros cálidos */
+  --papel: #f4f1ea; /* fondo de la app y tierra del mapa */
+  --superficie: #ffffff;
+  --tinta: #16232a; /* texto principal (16:1 sobre blanco) */
+  --tinta-suave: #4a5960; /* texto secundario (7.3:1) */
+  --tinta-tenue: #5e6b72; /* texto terciario (≥4.9:1 sobre papel) */
+  --borde: #e6e0d5;
+  --borde-fuerte: #d4ccbe;
+
+  /* Tipografía: Atkinson Hyperlegible Next, diseñada para máxima legibilidad */
+  --fuente: 'Atkinson Hyperlegible Next Variable', 'Atkinson Hyperlegible', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+
+  /* Forma */
+  --radio-s: 10px;
+  --radio-m: 14px;
+  --radio-l: 20px;
+  --sombra-1: 0 1px 2px rgb(22 35 42 / 0.08), 0 1px 1px rgb(22 35 42 / 0.04);
+  --sombra-2: 0 2px 6px rgb(22 35 42 / 0.1), 0 8px 24px rgb(22 35 42 / 0.08);
+  --sombra-3: 0 12px 40px rgb(22 35 42 / 0.22);
+  --curva: cubic-bezier(0.22, 0.8, 0.24, 1);
+}

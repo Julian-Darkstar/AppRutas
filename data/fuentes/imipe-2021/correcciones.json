@@ -1,0 +1,26 @@
+{
+  "_comentario": "Ajustes manuales que aplica scripts/importar-imipe.mjs sobre los datos del IMIPE. 'extremos' reemplaza nombres de extremos (en mayúsculas, como vienen en la fuente) que quedaron cortados en ambos sentidos; 'rutas' ajusta campos de una ruta por su id.",
+  "extremos": {
+    "TRES GUERR": { "nombre": "Tres Guerras", "motivo": "Cortado a 30 caracteres en ambos sentidos; hay una parada oficial llamada «3 Guerras»." },
+    "COL TRES G": { "nombre": "Col. Tres Guerras", "motivo": "Cortado en ambos sentidos («COL TRES» y «COL TRES G»)." },
+    "COL TRES": { "nombre": "Col. Tres Guerras", "motivo": "Cortado en ambos sentidos («COL TRES» y «COL TRES G»)." },
+    "CUAHUT": { "nombre": "Cuauhtémoc", "motivo": "Cortado en ambos sentidos." },
+    "VILLAS DEL ROMERAL/INDUST": { "nombre": "Villas del Romeral / Industrial", "motivo": "Cortado en ambos sentidos («INDUS», «INDUST»)." },
+    "SAN ISIDRO DE": { "nombre": "San Isidro de…", "motivo": "Cortado en ambos sentidos; no se sabe el nombre completo." },
+    "COL.": { "nombre": null, "motivo": "La fuente solo dice «COL.», sin el nombre de la colonia." }
+  },
+  "rutas": {
+    "15": {
+      "nombre": "Fracc. Latinoamericano",
+      "palabrasClave": ["Latino", "Latino Silva"],
+      "notas": "En la fuente oficial falta el nombre de uno de los extremos (solo dice «Col.»).",
+      "motivo": "El equipo la conocía como «Latino Silva» (ver la variante 15-A)."
+    },
+    "60": {
+      "nombre": "Circuito 3 (Pinos – Gobers)",
+      "palabrasClave": ["Pinos", "Gobers"],
+      "descripcion": "Circuito en dos sentidos. El trazo que hizo el equipo de AppRutas en 2023 coincide con el Circuito 3 Sur.",
+      "motivo": "La fuente la llama «Circuito 3»; el equipo la registró en 2023 como «Pinos – Gobers»."
+    }
+  }
+}

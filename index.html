@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es-MX">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>AppRutas · Rutas de camión en Celaya</title>
+    <meta name="description" content="Consulta los recorridos de las rutas de camión urbano de Celaya, Guanajuato. Gratis, rápida e instalable en tu teléfono." />
+    <meta name="theme-color" content="#0F4C5C" />
+    <meta property="og:title" content="AppRutas · Rutas de camión en Celaya" />
+    <meta property="og:description" content="Encuentra qué camión tomar y por dónde pasa." />
+    <meta property="og:image" content="icons/icon-512.png" />
+    <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="favicon.ico" sizes="48x48" />
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+    <link rel="preload" href="data/rutas.json" as="fetch" crossorigin />
+    <link rel="preconnect" href="https://tiles.openfreemap.org" crossorigin />
+  </head>
+  <body>
+    <div class="app">
+      <main id="mapa" class="mapa" aria-label="Mapa de rutas"></main>
+
+      <aside id="panel" class="panel" aria-label="Rutas">
+        <div id="panel-fijo" class="panel__fijo">
+          <button class="panel__asa" type="button" aria-label="Expandir el panel" aria-expanded="false"></button>
+          <header class="panel__cabecera">
+            <a class="marca" href="#/" aria-label="AppRutas, inicio">
+              <span id="marca-simbolo"></span>
+              <span class="marca__nombre">App<span>Rutas</span></span>
+            </a>
+            <span class="marca__ciudad">Celaya</span>
+            <button id="btn-acerca" class="boton-icono" type="button" aria-label="Acerca de AppRutas"></button>
+          </header>
+          <div class="buscador" role="search">
+            <span id="icono-buscar" class="buscador__icono"></span>
+            <input
+              id="buscar"
+              class="buscador__campo"
+              type="search"
+              placeholder="Busca una ruta, colonia o lugar"
+              autocomplete="off"
+              enterkeyhint="search"
+              aria-label="Buscar ruta"
+              aria-controls="contenido"
+            />
+            <button id="limpiar" class="boton-icono buscador__limpiar" type="button" aria-label="Borrar búsqueda" hidden></button>
+          </div>
+        </div>
+        <div id="contenido" class="panel__contenido" aria-live="polite"></div>
+      </aside>
+    </div>
+
+    <dialog id="acerca" class="dialogo" aria-labelledby="acerca-titulo">
+      <div class="dialogo__contenido">
+        <button class="boton-icono dialogo__cerrar" type="button" data-accion="cerrar-acerca" aria-label="Cerrar">
+          <svg class="icono" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+        </button>
+        <img class="dialogo__logo" src="icons/icon-192.png" alt="" width="64" height="64" />
+        <h2 id="acerca-titulo">Toma la ruta correcta</h2>
+        <p>
+          Más de 210 mil personas usan el camión todos los días en Celaya. Saber qué ruta tomar, por dónde pasa y dónde bajarse no
+          debería ser un misterio: AppRutas reúne los recorridos en un mapa claro, gratuito y que funciona en cualquier teléfono.
+        </p>
+        <h3>De dónde viene</h3>
+        <p>
+          AppRutas nació en 2023 como proyecto de la especialidad de Programación (6°G, generación 2020–2023) del CETIS No. 115
+          “Mexicano Japonés”, creado por Asaf Sebastian Orozco Paniagua, Julián Moisés Jiménez Cortés y Cinthya Noely Hernandez
+          Gallegos.
+        </p>
+        <h3>Sobre los datos</h3>
+        <p>
+          Los recorridos y las paradas oficiales vienen del Sistema de Información Geográfica del IMIPE Celaya (datos de 2021); las
+          rutas 61 y 15-A las trazó el equipo en 2023. Son aproximados y pueden haber cambiado, por ejemplo por las obras del tren.
+          Si ves un error o conoces una ruta que falta, repórtalo desde la ficha de la ruta.
+        </p>
+        <p class="dialogo__creditos">
+          Rutas y paradas: <a href="https://imipecelaya.org/cartografia-celaya/" target="_blank" rel="noopener">IMIPE Celaya</a>.
+          <br />
+          Mapa base: © colaboradores de <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>,
+          <a href="https://openfreemap.org" target="_blank" rel="noopener">OpenFreeMap</a> y
+          <a href="https://maplibre.org" target="_blank" rel="noopener">MapLibre</a>.
+          <br />
+          <a href="https://github.com/Julian-Darkstar/AppRutas" target="_blank" rel="noopener">Código en GitHub</a>
+        </p>
+      </div>
+    </dialog>
+
+    <noscript><p class="sin-js">AppRutas necesita JavaScript para mostrar el mapa de rutas.</p></noscript>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

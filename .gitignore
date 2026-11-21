@@ -1,0 +1,8 @@
+node_modules/
+dist/
+dev-dist/
+# Se genera desde data/rutas/ con `npm run datos`
+public/data/
+*.log
+.DS_Store
+.env*
