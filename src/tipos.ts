@@ -74,4 +74,6 @@ export interface DatosRutas {
 /** Lo que muestra la app en cada momento; se refleja en la URL (#/ruta/61/regreso). */
 export type Vista =
   | { tipo: 'lista' }
-  | { tipo: 'ruta'; id: string; sentido?: Sentido };
+  | { tipo: 'ruta'; id: string; sentido?: Sentido }
+  /** "¿Qué ruta me deja más cerca de…?" (#/destino/20.52350,-100.81570/Mercado%20Hidalgo) */
+  | { tipo: 'destino'; lat: number; lng: number; nombre: string };

@@ -25,4 +25,14 @@ describe('navegación por URL', () => {
     const vista = { tipo: 'ruta', id: '61', sentido: 'regreso' } as const;
     expect(leerHash(hashDe(vista))).toEqual(vista);
   });
+
+  it('lee y genera la vista de destino', () => {
+    const vista = { tipo: 'destino', lat: 20.5235, lng: -100.8157, nombre: 'Mercado Hidalgo / Centro' } as const;
+    const hash = hashDe(vista);
+    expect(hash).toBe('#/destino/20.52350,-100.81570/Mercado%20Hidalgo%20%2F%20Centro');
+    expect(leerHash(hash)).toEqual(vista);
+    expect(leerHash('#/destino/20.5,-100.8')).toEqual({ tipo: 'destino', lat: 20.5, lng: -100.8, nombre: 'Punto en el mapa' });
+    expect(leerHash('#/destino/hola/Algo')).toEqual({ tipo: 'lista' });
+    expect(leerHash('#/destino/20.5,-100.8/%E0%A4%A')).toEqual({ tipo: 'lista' });
+  });
 });

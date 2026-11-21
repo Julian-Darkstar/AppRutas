@@ -20,6 +20,8 @@ después de la primera visita.
 
 - **63 rutas** (38 urbanas y 25 suburbanas) con sus **755 paradas oficiales**, cada ruta con su color y su número sobre la línea.
 - **Búsqueda** por número (`47`, `15a`), colonia, lugar o nombre de parada, sin importar acentos.
+- **¿Qué ruta me deja cerca?** Busca un lugar (una escuela, un hospital, una calle) o toca el mapa: te dice qué rutas pasan
+  más cerca, a cuántos metros, cuánto caminarías y en qué parada bajarte.
 - **Ficha de cada ruta:** sentido de ida o regreso con flechas, paradas en orden, frecuencia, horario y tarifa.
 - **“Pasan por aquí”:** toca el mapa donde se juntan varias rutas y te dice cuáles son.
 - **Enlaces para compartir** (`…/#/ruta/61/regreso`), ideales para WhatsApp.
@@ -44,6 +46,7 @@ npm run preview    # sirve dist/ para probarla
 | App | TypeScript + [Vite](https://vite.dev), sin framework | La app es pequeña: unos 12 KB comprimidos antes del mapa |
 | Mapa | [MapLibre GL JS](https://maplibre.org) + [OpenFreeMap](https://openfreemap.org) | Libre, sin clave de API ni costo por uso, con estilo propio |
 | Datos | GeoJSON en `data/rutas/` y `data/paradas.geojson`, validado al compilar | Editable a mano, revisable en git y GitHub lo muestra como mapa |
+| Lugares | [Photon](https://photon.komoot.io) (komoot, datos de OpenStreetMap) | Gratis, sin clave y hecho para buscar mientras escribes; la cercanía a las rutas se calcula en el teléfono |
 | PWA | [vite-plugin-pwa](https://vite-pwa-org.netlify.app) (Workbox) | Funciona sin conexión; también guarda las teselas del mapa |
 | Hospedaje | GitHub Pages (`.github/workflows/publicar.yml`) | Gratis; se publica solo en cada push a `main` |
 
@@ -68,7 +71,7 @@ tests/             pruebas con Vitest
 2. ✅ **Todas las rutas oficiales:** 61 rutas y 774 paradas del IMIPE Celaya (2021) más las trazadas por el equipo.
 3. Verificar y actualizar recorridos (cambios desde 2021), “rutas cerca de mí”, líneas paralelas donde varias rutas comparten
    calle, modo oscuro, exportación a GTFS, formulario de reportes.
-4. Planeador de viajes: “¿cómo llego de A a B?”, con transbordos.
+4. Planeador de viajes: “¿cómo llego de A a B?”, con transbordos (ya existe “¿qué ruta me deja cerca?”).
 
 ## Créditos
 

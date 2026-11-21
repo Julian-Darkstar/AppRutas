@@ -24,6 +24,8 @@ export interface OpcionesMapa {
   /** Espacio que tapa la interfaz (panel lateral u hoja inferior) para encuadrar bien. */
   relleno: () => PaddingOptions;
   alTocarRutas: (ids: string[], lugar: [number, number]) => void;
+  /** Toque en una zona sin rutas: "¿qué ruta me deja cerca de aquí?". */
+  alTocarVacio?: (lugar: [number, number]) => void;
 }
 
 type Caja = [number, number, number, number];
@@ -68,7 +70,10 @@ export class MapaRutas {
   private seleccion: { id: string; sentido: Sentido; color: string; paradas: string[] } | null = null;
   private resaltada: string | null = null;
   private servicio: Servicio | null = null;
+  /** Rutas resaltadas a la vez (las que dejan cerca de un destino). */
+  private destacadas: string[] | null = null;
   private marcador: Marker | null = null;
+  private marcadorDestino: Marker | null = null;
   private readonly listo: Promise<void>;
 
   constructor(private readonly opciones: OpcionesMapa) {
@@ -253,6 +258,22 @@ export class MapaRutas {
       },
       paint: { 'text-color': '#4A5960', 'text-halo-color': '#FFFFFF', 'text-halo-width': 1.4 },
     });
+    // Tramo a pie desde donde te bajas hasta el destino.
+    m.addSource('caminata', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    m.addLayer({
+      id: 'caminata-linea',
+      type: 'line',
+      source: 'caminata',
+      layout: { 'line-cap': 'round' },
+      paint: { 'line-color': '#0F4C5C', 'line-width': 3, 'line-dasharray': [0.1, 2] },
+    });
+    m.addLayer({
+      id: 'caminata-bajada',
+      type: 'circle',
+      source: 'caminata',
+      filter: ['==', ['geometry-type'], 'Point'],
+      paint: { 'circle-radius': 7, 'circle-color': '#FFFFFF', 'circle-stroke-color': '#0F4C5C', 'circle-stroke-width': 3 },
+    });
     this.pintar();
   }
 
@@ -263,11 +284,16 @@ export class MapaRutas {
     const hay = this.seleccion !== null;
     const sel: ExpressionSpecification = ['==', ['get', 'ruta'], this.seleccion?.id ?? ''];
     const sentidoActivo: ExpressionSpecification = ['==', ['get', 'sentido'], this.seleccion?.sentido ?? ''];
-    const enfasis: ExpressionSpecification = hay ? sel : ['==', ['get', 'ruta'], this.resaltada ?? ''];
+    const destacadas = !hay && this.destacadas?.length ? this.destacadas : null;
+    const enfasis: ExpressionSpecification = hay
+      ? sel
+      : destacadas
+        ? ['in', ['get', 'ruta'], ['literal', destacadas]]
+        : ['==', ['get', 'ruta'], this.resaltada ?? ''];
 
     // Filtro urbanas/suburbanas: la ruta elegida se ve siempre.
     const delServicio: ExpressionSpecification = this.servicio ? ['==', ['get', 'servicio'], this.servicio] : ['literal', true];
-    const visible: ExpressionSpecification = hay ? ['any', sel, delServicio] : delServicio;
+    const visible: ExpressionSpecification = hay ? ['any', sel, delServicio] : destacadas ? ['any', enfasis, delServicio] : delServicio;
 
     // De la ruta elegida se dibuja fuerte solo el sentido activo; el otro, punteado.
     const filtroLineas: FilterSpecification = hay ? ['all', ES_RECORRIDO, visible, ['any', ['!', sel], sentidoActivo]] : ['all', ES_RECORRIDO, visible];
@@ -283,16 +309,18 @@ export class MapaRutas {
     if (this.seleccion) m.setPaintProperty('paradas-circulo', 'circle-stroke-color', this.seleccion.color);
 
     // Con 60+ rutas la vista general usa líneas finas y translúcidas para no saturar.
-    m.setPaintProperty('rutas-linea', 'line-width', anchoPorZoom(enfasis, [1.4, 2.4, 4, 7], [4, 6, 9, 13]));
-    m.setPaintProperty('rutas-borde', 'line-width', anchoPorZoom(enfasis, [2.8, 4.2, 6.5, 11], [7, 10, 14, 19]));
-    m.setPaintProperty('rutas-linea', 'line-opacity', hay ? ['case', sel, 1, 0.12] : ['case', enfasis, 1, 0.8]);
-    m.setPaintProperty('rutas-borde', 'line-opacity', hay ? ['case', sel, 1, 0.25] : ['case', enfasis, 1, 0.7]);
+    const grueso = destacadas ? [3, 4.5, 6.5, 10] : [4, 6, 9, 13];
+    const bordeGrueso = destacadas ? [5.5, 7.5, 10.5, 15] : [7, 10, 14, 19];
+    m.setPaintProperty('rutas-linea', 'line-width', anchoPorZoom(enfasis, [1.4, 2.4, 4, 7], grueso));
+    m.setPaintProperty('rutas-borde', 'line-width', anchoPorZoom(enfasis, [2.8, 4.2, 6.5, 11], bordeGrueso));
+    m.setPaintProperty('rutas-linea', 'line-opacity', hay || destacadas ? ['case', enfasis, 1, 0.12] : ['case', enfasis, 1, 0.8]);
+    m.setPaintProperty('rutas-borde', 'line-opacity', hay || destacadas ? ['case', enfasis, 1, 0.25] : ['case', enfasis, 1, 0.7]);
     m.setLayoutProperty('rutas-linea', 'line-sort-key', ['case', enfasis, 2, 1]);
     m.setLayoutProperty('rutas-borde', 'line-sort-key', ['case', enfasis, 2, 1]);
 
     // Números: en la vista general aparecen al acercarse; con una ruta elegida, solo los suyos.
-    m.setFilter('rutas-numeros', hay ? ['all', ES_RECORRIDO, sel] : ['all', ES_RECORRIDO, visible]);
-    m.setLayerZoomRange('rutas-numeros', hay ? 11.5 : 13.5, 24);
+    m.setFilter('rutas-numeros', hay || destacadas ? ['all', ES_RECORRIDO, enfasis] : ['all', ES_RECORRIDO, visible]);
+    m.setLayerZoomRange('rutas-numeros', hay || destacadas ? 11.5 : 13.5, 24);
     m.setLayoutProperty('rutas-numeros', 'symbol-sort-key', ['case', enfasis, 0, 1]);
   }
 
@@ -322,7 +350,9 @@ export class MapaRutas {
     });
     m.on('click', (e) => {
       const ids = rutasEn(e.point, 12);
-      if (ids.length) this.opciones.alTocarRutas(ids, [e.lngLat.lng, e.lngLat.lat]);
+      const lugar: [number, number] = [e.lngLat.lng, e.lngLat.lat];
+      if (ids.length) this.opciones.alTocarRutas(ids, lugar);
+      else this.opciones.alTocarVacio?.(lugar);
     });
   }
 
@@ -368,6 +398,48 @@ export class MapaRutas {
     const elemento = document.createElement('div');
     elemento.className = 'marcador-toque';
     this.marcador = new Marker({ element: elemento }).setLngLat(lugar).addTo(this.mapa);
+  }
+
+  /** Resalta varias rutas a la vez (null: ninguna). La ruta elegida, si hay, tiene prioridad. */
+  async destacar(ids: string[] | null) {
+    await this.listo;
+    this.destacadas = ids?.length ? ids : null;
+    this.pintar();
+  }
+
+  /** Marcador del destino buscado (null lo quita). */
+  marcarDestino(lugar: [number, number] | null) {
+    this.marcadorDestino?.remove();
+    this.marcadorDestino = null;
+    if (!lugar) return;
+    const elemento = document.createElement('div');
+    elemento.className = 'marcador-destino';
+    elemento.setAttribute('aria-hidden', 'true');
+    // MapLibre mueve el contenedor con `transform`; la forma girada del pin va en un hijo.
+    elemento.innerHTML = '<span class="marcador-destino__pin"></span>';
+    this.marcadorDestino = new Marker({ element: elemento, anchor: 'bottom' }).setLngLat(lugar).addTo(this.mapa);
+  }
+
+  /** Línea punteada del tramo a pie: desde donde te bajas hasta el destino (null la quita). */
+  async caminata(desde: [number, number] | null, hasta: [number, number] | null) {
+    await this.listo;
+    const fuente = this.mapa.getSource('caminata') as { setData(d: unknown): void } | undefined;
+    const features = desde && hasta
+      ? [
+          { type: 'Feature', properties: {}, geometry: { type: 'LineString', coordinates: [desde, hasta] } },
+          { type: 'Feature', properties: {}, geometry: { type: 'Point', coordinates: desde } },
+        ]
+      : [];
+    fuente?.setData({ type: 'FeatureCollection', features });
+  }
+
+  /** Encuadra un conjunto de puntos [lng, lat]. */
+  encuadrarPuntos(puntos: [number, number][], maxZoom = 16) {
+    if (!puntos.length) return;
+    const lngs = puntos.map((p) => p[0]);
+    const lats = puntos.map((p) => p[1]);
+    const margen = 0.0015;
+    this.encuadrar([Math.min(...lngs) - margen, Math.min(...lats) - margen, Math.max(...lngs) + margen, Math.max(...lats) + margen], maxZoom);
   }
 
   redimensionar() {

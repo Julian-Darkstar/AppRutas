@@ -769,6 +769,108 @@ input {
   box-shadow: 0 0 0 1px var(--tinta);
 }
 
+/* Lugares encontrados por la búsqueda */
+.lugar-item {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: var(--radio-m);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.lugar-item:hover {
+  background: var(--papel);
+}
+
+.lugar-item > .icono {
+  color: var(--tinta-tenue);
+}
+
+.lugar-item__icono {
+  display: grid;
+  place-items: center;
+  width: 50px;
+  height: 34px;
+  border-radius: var(--radio-s);
+  background: var(--petroleo-50);
+  color: var(--petroleo-700);
+}
+
+.lugares-aviso {
+  margin: 0 4px 10px;
+  padding: 10px 12px;
+  border-radius: var(--radio-m);
+  background: var(--papel);
+  font-size: 0.875rem;
+  color: var(--tinta-suave);
+}
+
+/* "¿Qué ruta me deja cerca de…?" */
+.destino {
+  padding: 0 4px;
+}
+
+.destino__barra {
+  margin-left: -6px;
+}
+
+.destino__cabecera {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 10px 0 16px;
+}
+
+.destino__icono {
+  display: grid;
+  flex-shrink: 0;
+  place-items: center;
+  width: 50px;
+  height: 50px;
+  border-radius: var(--radio-m);
+  background: var(--petroleo-700);
+  color: #fff;
+}
+
+.destino__icono .icono {
+  width: 26px;
+  height: 26px;
+}
+
+.destino .ruta-item__meta + .ruta-item__meta {
+  margin-top: 1px;
+}
+
+.nota--destino {
+  background: var(--petroleo-50);
+}
+
+.nota--destino .icono {
+  color: var(--petroleo-700);
+}
+
+.detalle__volver {
+  max-width: 100%;
+}
+
+.detalle__volver-texto {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detalle__volver-texto .icono {
+  vertical-align: -5px;
+}
+
 /* Paradas de la ruta (lista plegable) */
 .paradas__resumen {
   display: flex;
@@ -967,6 +1069,44 @@ input {
 @media (min-width: 900px) {
   .mapa__error {
     padding-bottom: 24px;
+  }
+}
+
+/* Pin del destino: la punta toca el lugar (ancla abajo). */
+.marcador-destino {
+  width: 40px;
+  height: 40px;
+  pointer-events: none;
+}
+
+.marcador-destino__pin {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 28px;
+  height: 28px;
+  border-radius: 50% 50% 50% 0;
+  background: var(--petroleo-700);
+  box-shadow: 0 0 0 2.5px #fff, var(--sombra-2);
+  transform: rotate(-45deg);
+  animation: caer 0.35s var(--curva);
+}
+
+.marcador-destino__pin::after {
+  content: '';
+  position: absolute;
+  top: 9px;
+  left: 9px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #fff;
+}
+
+@keyframes caer {
+  from {
+    transform: translateY(-14px) rotate(-45deg);
+    opacity: 0;
   }
 }
 

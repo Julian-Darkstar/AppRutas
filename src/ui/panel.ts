@@ -1,6 +1,20 @@
+import { formatoDistancia, minutosCaminando, type RutaCercana, type ResultadoCercania } from '../cercania';
 import { urlReporte } from '../config';
+import type { Lugar } from '../lugares';
 import type { Parada, Ruta, Sentido, Servicio } from '../tipos';
 import { icono } from './iconos';
+
+export interface EstadoLugares {
+  estado: 'cargando' | 'listo' | 'error';
+  resultados: Lugar[];
+}
+
+/** Ruta abierta desde la vista de destino: la ficha dice dónde bajarse. */
+export interface ContextoDestino {
+  nombre: string;
+  hash: string;
+  cercana: RutaCercana | null;
+}
 
 const esc = (texto: string) =>
   texto.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]!);
@@ -62,6 +76,32 @@ interface OpcionesLista {
   instalable: boolean;
   /** Por qué apareció una ruta en la búsqueda, si fue por una de sus paradas. */
   motivo?: (ruta: Ruta) => string | null;
+  /** Lugares encontrados para la búsqueda (null: la búsqueda no es de lugares). */
+  lugares?: EstadoLugares | null;
+}
+
+function seccionLugares(lugares: EstadoLugares | null | undefined): string {
+  if (!lugares) return '';
+  if (lugares.estado === 'cargando' && !lugares.resultados.length) {
+    return `<div class="lista__encabezado"><h2 class="titulo-seccion">Lugares</h2><span class="contador">Buscando…</span></div>`;
+  }
+  if (lugares.estado === 'error') {
+    return `<p class="lugares-aviso">No se pudo buscar lugares (¿sin internet?). Las rutas sí funcionan sin conexión.</p>`;
+  }
+  if (!lugares.resultados.length) return '';
+  return `<div class="lista__encabezado"><h2 class="titulo-seccion">Lugares</h2><span class="contador">¿Qué ruta te deja cerca?</span></div>
+    <ul class="rutas">${lugares.resultados
+      .map(
+        (l) => `<li><button class="lugar-item" data-lugar="${l.coordenadas[1]},${l.coordenadas[0]}" data-nombre="${esc(l.nombre)}">
+          <span class="lugar-item__icono">${icono.lugar}</span>
+          <span class="ruta-item__texto">
+            <span class="ruta-item__nombre">${esc(l.nombre)}</span>
+            ${l.detalle ? `<span class="ruta-item__meta">${esc(l.detalle)}</span>` : ''}
+          </span>
+          ${icono.siguiente}
+        </button></li>`,
+      )
+      .join('')}</ul>`;
 }
 
 function filtros(servicio: Servicio | null, conteo: Record<Servicio, number>, total: number): string {
@@ -80,13 +120,15 @@ function filtros(servicio: Servicio | null, conteo: Record<Servicio, number>, to
   </div>`;
 }
 
-export function htmlLista({ rutas, total, consulta, aqui, servicio, conteo, instalable, motivo }: OpcionesLista): string {
+export function htmlLista({ rutas, total, consulta, aqui, servicio, conteo, instalable, motivo, lugares }: OpcionesLista): string {
   let encabezado: string;
   if (aqui) {
     encabezado = `<h2 class="titulo-seccion">Pasan por aquí</h2>
       <button class="boton-texto" data-accion="ver-todas">Ver todas</button>`;
   } else if (consulta) {
-    encabezado = `<h2 class="titulo-seccion">Resultados</h2><span class="contador">${rutas.length} de ${total}</span>`;
+    encabezado = rutas.length || !lugares?.resultados.length
+      ? `<h2 class="titulo-seccion">${lugares ? 'Rutas' : 'Resultados'}</h2><span class="contador">${rutas.length} de ${total}</span>`
+      : '';
   } else {
     encabezado = `<h2 class="titulo-seccion">${servicio ? TITULO_SERVICIO[servicio] : 'Rutas de Celaya'}</h2><span class="contador">${rutas.length} ${rutas.length === 1 ? 'ruta' : 'rutas'}</span>`;
   }
@@ -107,10 +149,11 @@ export function htmlLista({ rutas, total, consulta, aqui, servicio, conteo, inst
     cuerpo = `<ul class="rutas">${rutas.map((r) => itemRuta(r, consulta && motivo ? motivo(r) : null)).join('')}</ul>`;
   }
 
-  const vacio = !rutas.length
+  const hayLugares = Boolean(lugares?.resultados.length) || lugares?.estado === 'cargando';
+  const vacio = !rutas.length && !hayLugares
     ? `<div class="vacio">
         <p class="vacio__titulo">No encontramos “${esc(consulta)}”</p>
-        <p>Prueba con el número de la ruta (por ejemplo, <strong>47</strong>), una colonia o el nombre de una parada.</p>
+        <p>Prueba con el número de la ruta (por ejemplo, <strong>47</strong>), una colonia, una calle o un lugar como una escuela o un hospital.</p>
       </div>`
     : '';
 
@@ -118,7 +161,8 @@ export function htmlLista({ rutas, total, consulta, aqui, servicio, conteo, inst
 
   return `<div class="lista">
     ${aqui ? '' : filtros(servicio, conteo, total)}
-    <div class="lista__encabezado">${encabezado}</div>
+    ${consulta ? seccionLugares(lugares) : ''}
+    ${encabezado ? `<div class="lista__encabezado">${encabezado}</div>` : ''}
     ${aqui ? '<p class="lista__ayuda">Toca una para ver su recorrido.</p>' : ''}
     ${cuerpo}
     ${vacio}
@@ -157,7 +201,7 @@ function seccionParadas(ruta: Ruta, sentido: Sentido, paradasPorId: Map<string, 
   </details>`;
 }
 
-export function htmlDetalle(ruta: Ruta, sentido: Sentido, paradasPorId: Map<string, Parada>): string {
+export function htmlDetalle(ruta: Ruta, sentido: Sentido, paradasPorId: Map<string, Parada>, destino: ContextoDestino | null = null): string {
   const dosSentidos = ruta.sentidos.length > 1;
   const selector = dosSentidos
     ? `<div class="sentidos" role="group" aria-label="Sentido del recorrido">
@@ -195,8 +239,18 @@ export function htmlDetalle(ruta: Ruta, sentido: Sentido, paradasPorId: Map<stri
     `Ruta: ${ruta.numero} – ${ruta.nombre}\n¿Qué está mal? (calle, sentido, parada, horario...):\n`,
   );
 
+  const volver = destino ? `Rutas cerca de ${destino.nombre}` : 'Todas las rutas';
+  let aviso = '';
+  if (destino?.cercana) {
+    const c = destino.cercana;
+    const bajada = c.parada && c.parada.metros <= Math.max(c.metros * 2, 400)
+      ? `Bájate en <strong>${esc(c.parada.parada.nombre)}</strong>, a ${formatoDistancia(c.parada.metros)} (≈ ${minutosCaminando(c.parada.metros)} min a pie).`
+      : `La ruta pasa a ${formatoDistancia(c.metros)} (≈ ${minutosCaminando(c.metros)} min a pie).`;
+    aviso = `<p class="nota nota--destino">${icono.lugar}<span>Para llegar a <strong>${esc(destino.nombre)}</strong>: ${bajada}</span></p>`;
+  }
+
   return `<article class="detalle" ${estiloRuta(ruta)} aria-labelledby="titulo-ruta">
-    <button class="boton-texto detalle__volver" data-accion="volver">${icono.atras}Todas las rutas</button>
+    <button class="boton-texto detalle__volver" data-accion="volver"><span class="detalle__volver-texto">${icono.atras}${esc(volver)}</span></button>
     <header class="detalle__cabecera">
       ${insignia(ruta, 'insignia--grande')}
       <div>
@@ -204,6 +258,7 @@ export function htmlDetalle(ruta: Ruta, sentido: Sentido, paradasPorId: Map<stri
         <h2 class="detalle__titulo" id="titulo-ruta" tabindex="-1">${esc(ruta.nombre)}</h2>
       </div>
     </header>
+    ${aviso}
     ${selector}
     ${ruta.descripcion ? `<p class="detalle__descripcion">${esc(ruta.descripcion)}</p>` : ''}
     ${notas}
@@ -220,4 +275,50 @@ export function htmlDetalle(ruta: Ruta, sentido: Sentido, paradasPorId: Map<stri
     </div>
     <p class="detalle__fuente">Recorrido aproximado. ${esc(fuente)} Puede haber cambiado: si notas algo distinto, avísanos.</p>
   </article>`;
+}
+
+/** Cuántas rutas se muestran (y resaltan) de entrada en la vista de destino. */
+export const RUTAS_DESTINO_INICIALES = 12;
+
+/** "¿Qué ruta me deja más cerca de…?": rutas ordenadas por la distancia a la que pasan del destino. */
+export function htmlDestino(nombre: string, { cercanas, fueraDeRadio }: ResultadoCercania, mostrarTodas = false): string {
+  const visibles = mostrarTodas ? cercanas : cercanas.slice(0, RUTAS_DESTINO_INICIALES);
+  const ocultas = cercanas.length - visibles.length;
+  const items = visibles
+    .map((c) => {
+      const pasa = `Pasa a ${formatoDistancia(c.metros)} · ≈ ${minutosCaminando(c.metros)} min a pie`;
+      const parada = c.parada && c.parada.metros <= Math.max(c.metros * 2, 400)
+        ? `<span class="ruta-item__meta">Bájate en: <strong>${esc(c.parada.parada.nombre)}</strong> (${formatoDistancia(c.parada.metros)})</span>`
+        : '';
+      return `<li><button class="ruta-item" data-ruta="${esc(c.ruta.id)}" data-sentido-destino="${c.sentido}" ${estiloRuta(c.ruta)}>
+        ${insignia(c.ruta)}
+        <span class="ruta-item__texto">
+          <span class="ruta-item__nombre">${esc(c.ruta.nombre)}</span>
+          <span class="ruta-item__meta">${pasa}</span>
+          ${parada}
+        </span>
+        ${icono.siguiente}
+      </button></li>`;
+    })
+    .join('');
+  const aviso = fueraDeRadio && cercanas.length
+    ? `<p class="nota">${icono.info}<span>Ninguna ruta pasa a menos de 1 km de este lugar. Estas son las más cercanas.</span></p>`
+    : '';
+  return `<div class="destino">
+    <div class="destino__barra">
+      <button class="boton-texto" data-accion="cerrar-destino">${icono.atras}Todas las rutas</button>
+    </div>
+    <header class="destino__cabecera">
+      <span class="destino__icono">${icono.lugar}</span>
+      <div>
+        <p class="detalle__sobretitulo">Rutas que te dejan cerca de</p>
+        <h2 class="detalle__titulo" id="titulo-destino" tabindex="-1">${esc(nombre)}</h2>
+      </div>
+    </header>
+    ${aviso}
+    <div class="lista__encabezado"><h2 class="titulo-seccion">${fueraDeRadio ? 'Las más cercanas' : 'Pasan cerca'}</h2><span class="contador">${cercanas.length} ${cercanas.length === 1 ? 'ruta' : 'rutas'}</span></div>
+    <ul class="rutas">${items}</ul>
+    ${ocultas > 0 ? `<button class="boton boton--fantasma boton--ancho" data-accion="destino-todas">Ver las otras ${ocultas} rutas (más lejos)</button>` : ''}
+    <p class="detalle__fuente">Distancia en línea recta hasta donde pasa la ruta; caminando puede ser un poco más. Toca una ruta para ver su recorrido.</p>
+  </div>`;
 }
